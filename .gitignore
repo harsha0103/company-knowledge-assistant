@@ -1,6 +1,43 @@
-# gitignore template for LangChain products, e.g., LangGraph, LangSmith
-# website: https://www.langchain.com/
-# website: https://www.langchain.com/langgraph
+# Environment / secrets
+.env
+.env.*
+!.env.example
 
-# LangGraph
-.langgraph_api/
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+
+# uv
+.uv-cache/
+
+# Docker
+docker-compose.override.yml
+
+# Postgres data (if you ever add a local pgdata bind mount)
+pgdata/
+*.dump
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Logs
+*.log
+logfile
+
+# LangSmith / LangChain cache
+.langchain/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+Thumbs.db
