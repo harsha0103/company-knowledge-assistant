@@ -33,7 +33,20 @@ PROMPT = ChatPromptTemplate.from_messages([
 ])
 
 async def _build_chain():
-    pass
+    store = await get_vector_store()
+    retriver= store.as_retriever(search_kwargs={'k':int(os.getenv('RETRIVAL_K','5'))})
+    llm = ChatOpenAI(model='gpt-4o-mini')
+    doc_chain=create_stuff_documents_chain(llm,PROMPT)
+    rag_chain= create_retrieval_chain(retriver,doc_chain)
+    return rag_chain 
 
-async def answer_with_docs_async(question: str) -> Tuple[str, List[str]]:
-    pass
+async def answer_with_docs_async(question: str) :
+    chain= await _build_chain()
+    result= await chain.ainvoke({'input':question})
+    answer= result['answer']
+
+    source=[]
+    docs=result['context']
+    unique_source={d.metadata.get("source") for d in docs}
+    sources=sorted(unique_source)
+    return answer,sources
