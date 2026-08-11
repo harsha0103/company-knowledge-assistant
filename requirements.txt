@@ -5,6 +5,10 @@ python-dotenv
 pandas
 tiktoken
 
+# Frontend
+streamlit
+requests
+
 # DB / pool
 psycopg[binary,pool]
 

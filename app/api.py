@@ -1,21 +1,15 @@
-# app/api.p
+# app/api.py
 from __future__ import annotations
 import asyncio, time
-from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from .rag import answer_with_docs_async
 from .ingest import run_ingest_async
 
 app = FastAPI(title="Company Knowledge Assistant")
-
-# Static frontend
-static_dir = Path(__file__).with_name("static")
-app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
 # Ingestion status
 _ingest_lock = asyncio.Lock()
@@ -32,8 +26,12 @@ class Ask(BaseModel):
     question: str
 
 @app.get("/")
-async def root_page():
-    return FileResponse(static_dir / "index.html")
+async def root():
+    return {"status": "ok", "message": "Company Knowledge Assistant API is running. UI is served separately by Streamlit."}
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
 
 async def _ingest_job():
     _ingest_last.update({"status": "running", "started_at": time.time(), "finished_at": None, "stats": None, "error": None})

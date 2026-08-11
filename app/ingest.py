@@ -63,8 +63,10 @@ def _chunk(docs: List[Document]) -> List[Document]:
 
 
 async def run_ingest_async() -> dict:
-   docs= _load_docs(DATA_DIR)
-   chunks=_chunk(docs)
+   # _load_docs/_chunk are CPU-bound and synchronous - run them in a thread
+   # so they don't block the event loop (and everyone else's requests) while parsing.
+   docs = await asyncio.to_thread(_load_docs, DATA_DIR)
+   chunks = await asyncio.to_thread(_chunk, docs)
    store= await get_vector_store()
    await store.aadd_documents(chunks)
    print(F'INGET:{len(docs)} docs, {len(chunks)} chunks')
